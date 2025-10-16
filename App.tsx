@@ -1,24 +1,34 @@
-import React, { useState } from 'react';
 
-// --- DATA ---
+import React, { useState, useEffect, useCallback } from 'react';
 
-// FIX: Define a type for a team member for better type safety.
+// --- TYPE DEFINITIONS ---
 interface TeamMember {
     name: string;
     phone: string;
-    role: string;
 }
 
+interface TeamMemberCardProps {
+    member: TeamMember;
+    onClick: (member: TeamMember) => void;
+}
+
+interface TeamListProps {
+    members: TeamMember[];
+    onMemberClick: (member: TeamMember) => void;
+}
+
+
+// --- DATA ---
 const TEAM_MEMBERS: TeamMember[] = [
-    { name: 'FASYA', phone: '0143839582', role: 'Sales Lead' },
-    { name: 'LIEN', phone: '0162659190', role: 'Customer Support' },
-    { name: 'LISA', phone: '01110516455', role: 'Sales Specialist' },
-    { name: 'ECA', phone: '01116179190', role: 'Technical Expert' },
-    { name: 'FARAH', phone: '0146499190', role: 'Sales Specialist' },
-    { name: 'FIFI', phone: '0168019190', role: 'Account Manager' },
-    { name: 'AYU', phone: '0143839682', role: 'Sales Specialist' },
-    { name: 'IREEN', phone: '0173744553', role: 'Product Specialist' },
-    { name: 'JIHA', phone: '0174044557', role: 'Customer Support' }
+    { name: 'FASYA', phone: '0143839582' },
+    { name: 'LIEN', phone: '0162659190' },
+    { name: 'LISA', phone: '01110516455' },
+    { name: 'ECA', phone: '01116179190' },
+    { name: 'FARAH', phone: '0146499190' },
+    { name: 'FIFI', phone: '0168019190' },
+    { name: 'AYU', phone: '0143839682' },
+    { name: 'IREEN', phone: '0173744553' },
+    { name: 'JIHA', phone: '0174044557' }
 ];
 
 // --- HELPER CONSTANTS & FUNCTIONS ---
@@ -45,7 +55,7 @@ const getAvatarColor = (name: string) => {
 
 
 // --- COMPONENTS ---
-const Avatar = ({ name }: { name: string }) => {
+const Avatar: React.FC<{ name: string }> = ({ name }) => {
     const initial = name.charAt(0).toUpperCase();
     const colorClasses = getAvatarColor(name);
 
@@ -56,7 +66,7 @@ const Avatar = ({ name }: { name: string }) => {
     );
 };
 
-const Header = () => {
+const Header: React.FC = () => {
     return (
         <header className="text-center mb-8">
             <div className="w-full aspect-video bg-gray-100 rounded-xl mb-6 overflow-hidden shadow-lg">
@@ -77,7 +87,7 @@ const Header = () => {
     );
 };
 
-const SearchBar = ({ value, onChange }: { value: string, onChange: (value: string) => void }) => (
+const SearchBar: React.FC<{ value: string; onChange: (value: string) => void }> = ({ value, onChange }) => (
     <div className="relative mb-6">
         <input
             type="text"
@@ -95,15 +105,9 @@ const SearchBar = ({ value, onChange }: { value: string, onChange: (value: strin
     </div>
 );
 
-// FIX: Define props interface for TeamMemberCard to resolve typing issue with the 'key' prop.
-interface TeamMemberCardProps {
-    member: TeamMember;
-    onClick: (member: TeamMember) => void;
-}
-
-const TeamMemberCard = ({ member, onClick }: TeamMemberCardProps) => (
+const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onClick }) => (
     <button
-        className="w-full bg-white/80 border border-gray-200 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 active:scale-95 transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 p-3 flex items-center space-x-3"
+        className="w-full bg-white/80 border border-gray-200 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 p-3 flex items-center space-x-3"
         onClick={() => onClick(member)}
         aria-label={`Contact ${member.name} on WhatsApp`}
     >
@@ -115,12 +119,12 @@ const TeamMemberCard = ({ member, onClick }: TeamMemberCardProps) => (
                     <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm3.123 5.467a.75.75 0 00-1.06 1.06l1.25 1.25a.75.75 0 001.06 0l2.5-2.5a.75.75 0 00-1.06-1.06L9.39 9.22l-.722-.722z" clipRule="evenodd" />
                 </svg>
             </div>
-            <p className="text-xs text-gray-500">{member.role}</p>
+            <p className="text-xs text-gray-500">Sales Specialist</p>
         </div>
     </button>
 );
 
-const TeamList = ({ members, onMemberClick }: { members: TeamMember[], onMemberClick: (member: TeamMember) => void }) => {
+const TeamList: React.FC<TeamListProps> = ({ members, onMemberClick }) => {
     if (members.length === 0) {
         return (
             <div className="text-center py-10">
@@ -143,18 +147,9 @@ const TeamList = ({ members, onMemberClick }: { members: TeamMember[], onMemberC
     );
 };
 
-const Footer = () => {
-    const currentYear = new Date().getFullYear();
-    return (
-        <footer className="text-center mt-8">
-            <p className="text-xs text-gray-400">&copy; {currentYear} kemchannelpg. All Rights Reserved.</p>
-        </footer>
-    );
-};
-
 
 // --- MAIN APP COMPONENT ---
-const App = () => {
+const App: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
 
     const filteredMembers = TEAM_MEMBERS.filter(member =>
@@ -175,7 +170,6 @@ const App = () => {
                     members={filteredMembers} 
                     onMemberClick={openWhatsApp} 
                 />
-                <Footer />
             </main>
         </div>
     );
