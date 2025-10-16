@@ -47,7 +47,12 @@ const Header: React.FC = () => {
                     className="w-full h-full object-cover"
                 />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">@kemchannelpg</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center justify-center space-x-2">
+                <span>@kemchannelpg</span>
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm3.123 5.467a.75.75 0 00-1.06 1.06l1.25 1.25a.75.75 0 001.06 0l2.5-2.5a.75.75 0 00-1.06-1.06L9.39 9.22l-.722-.722z" clipRule="evenodd" />
+                </svg>
+            </h1>
             <p className="text-gray-600">Connect with our specialists</p>
         </header>
     );
