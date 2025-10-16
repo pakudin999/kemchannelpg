@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 
 // --- TYPE DEFINITIONS ---
@@ -8,18 +9,12 @@ interface TeamMember {
 
 interface TeamMemberCardProps {
     member: TeamMember;
-    onSelect: (member: TeamMember) => void;
+    onClick: (member: TeamMember) => void;
 }
 
 interface TeamListProps {
     members: TeamMember[];
-    onSelectMember: (member: TeamMember) => void;
-}
-
-interface ConfirmationModalProps {
-    member: TeamMember;
-    onClose: () => void;
-    onConfirm: () => void;
+    onMemberClick: (member: TeamMember) => void;
 }
 
 
@@ -110,28 +105,26 @@ const SearchBar: React.FC<{ value: string; onChange: (value: string) => void }> 
     </div>
 );
 
-const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onSelect }) => (
+const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onClick }) => (
     <button
-        className="w-full bg-white/80 border border-gray-200 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400"
-        onClick={() => onSelect(member)}
-        aria-label={`Chat with ${member.name} on WhatsApp`}
+        className="w-full bg-white/80 border border-gray-200 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 p-3 flex items-center space-x-3"
+        onClick={() => onClick(member)}
+        aria-label={`Contact ${member.name} on WhatsApp`}
     >
-        <div className="p-3 flex items-center space-x-3">
-            <Avatar name={member.name} />
-            <div className="flex-grow text-left overflow-hidden">
-                <div className="flex items-center space-x-1.5">
-                    <h2 className="text-sm font-semibold text-gray-900 truncate">{member.name}</h2>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm3.123 5.467a.75.75 0 00-1.06 1.06l1.25 1.25a.75.75 0 001.06 0l2.5-2.5a.75.75 0 00-1.06-1.06L9.39 9.22l-.722-.722z" clipRule="evenodd" />
-                    </svg>
-                </div>
-                <p className="text-xs text-gray-500 truncate">Sales Specialist</p>
+        <Avatar name={member.name} />
+        <div className="flex-grow text-left">
+            <div className="flex items-center space-x-1.5">
+                <h2 className="text-base font-semibold text-gray-900">{member.name}</h2>
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm3.123 5.467a.75.75 0 00-1.06 1.06l1.25 1.25a.75.75 0 001.06 0l2.5-2.5a.75.75 0 00-1.06-1.06L9.39 9.22l-.722-.722z" clipRule="evenodd" />
+                </svg>
             </div>
+            <p className="text-xs text-gray-500">Sales Specialist</p>
         </div>
     </button>
 );
 
-const TeamList: React.FC<TeamListProps> = ({ members, onSelectMember }) => {
+const TeamList: React.FC<TeamListProps> = ({ members, onMemberClick }) => {
     if (members.length === 0) {
         return (
             <div className="text-center py-10">
@@ -144,114 +137,41 @@ const TeamList: React.FC<TeamListProps> = ({ members, onSelectMember }) => {
     return (
         <div className="grid grid-cols-2 gap-3">
             {members.map((member) => (
-                <TeamMemberCard key={member.name} member={member} onSelect={onSelectMember} />
+                <TeamMemberCard 
+                    key={member.name} 
+                    member={member} 
+                    onClick={onMemberClick}
+                />
             ))}
         </div>
     );
 };
 
-const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ member, onClose, onConfirm }) => {
-    return (
-        <div 
-            className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in"
-            onClick={onClose}
-            aria-modal="true"
-            role="dialog"
-        >
-            <div className="modal-backdrop bg-black/50 absolute inset-0"></div>
-            <div 
-                className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full m-4 p-6 animate-scale-in"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="text-center">
-                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.959 8.959 0 01-4.906-1.436L3 21l1.436-5.094A8.959 8.959 0 013 12c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
-                        </svg>
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Start WhatsApp Chat</h3>
-                    <p className="text-gray-600 mb-6">
-                        Open WhatsApp to chat with <span className="font-semibold text-gray-900">{member.name}</span>?
-                    </p>
-                    <div className="flex space-x-3">
-                        <button 
-                            onClick={onClose}
-                            className="flex-1 px-4 py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
-                        >
-                            Cancel
-                        </button>
-                        <button 
-                            onClick={onConfirm}
-                            className="flex-1 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-green-400"
-                        >
-                            Open WhatsApp
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
 
 // --- MAIN APP COMPONENT ---
 const App: React.FC = () => {
-    const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
 
     const filteredMembers = TEAM_MEMBERS.filter(member =>
         member.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
-    const handleSelectMember = (member: TeamMember) => {
-        setSelectedMember(member);
+    
+    const openWhatsApp = (member: TeamMember) => {
+        const whatsappUrl = `https://wa.me/${member.phone.replace(/^0/, '60')}`;
+        window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     };
-
-    const handleCloseModal = useCallback(() => {
-        setSelectedMember(null);
-    }, []);
-
-    const handleConfirmAction = () => {
-        if (selectedMember) {
-            const whatsappUrl = `https://wa.me/${selectedMember.phone.replace(/^0/, '60')}`;
-            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-            handleCloseModal();
-        }
-    };
-
-    useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                handleCloseModal();
-            }
-        };
-
-        if (selectedMember) {
-            document.addEventListener('keydown', handleKeyDown);
-        }
-
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [selectedMember, handleCloseModal]);
-
 
     return (
-        <React.Fragment>
-            <div className="p-4 sm:p-8">
-                <main className="w-full max-w-md mx-auto bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg px-4 sm:px-6 py-8">
-                    <Header />
-                    <SearchBar value={searchQuery} onChange={setSearchQuery} />
-                    <TeamList members={filteredMembers} onSelectMember={handleSelectMember} />
-                </main>
-            </div>
-            {selectedMember && (
-                <ConfirmationModal 
-                    member={selectedMember} 
-                    onClose={handleCloseModal} 
-                    onConfirm={handleConfirmAction} 
+        <div className="p-4 sm:p-8">
+            <main className="w-full max-w-md mx-auto bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg px-4 sm:px-6 py-8">
+                <Header />
+                <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                <TeamList 
+                    members={filteredMembers} 
+                    onMemberClick={openWhatsApp} 
                 />
-            )}
-        </React.Fragment>
+            </main>
+        </div>
     );
 };
 
