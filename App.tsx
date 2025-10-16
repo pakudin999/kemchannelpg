@@ -42,7 +42,7 @@ const Header: React.FC = () => {
         <header className="text-center mb-8">
             <div className="w-full aspect-video bg-gray-100 rounded-xl mb-6 overflow-hidden shadow-lg">
                 <img 
-                    src="https://picsum.photos/seed/business/600/338" 
+                    src="https://i.imgur.com/3tq8TU6.jpeg" 
                     alt="Channel Banner"
                     className="w-full h-full object-cover"
                 />
