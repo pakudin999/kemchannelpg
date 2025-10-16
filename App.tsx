@@ -1,1 +1,188 @@
-// This file is no longer needed as all code is now in index.html
+import React, { useState, useEffect, useCallback } from 'react';
+
+// --- TYPE DEFINITIONS ---
+interface TeamMember {
+    name: string;
+    phone: string;
+}
+
+interface TeamMemberCardProps {
+    member: TeamMember;
+    onSelect: (member: TeamMember) => void;
+}
+
+interface TeamListProps {
+    members: TeamMember[];
+    onSelectMember: (member: TeamMember) => void;
+}
+
+interface ConfirmationModalProps {
+    member: TeamMember;
+    onClose: () => void;
+    onConfirm: () => void;
+}
+
+
+// --- DATA ---
+const TEAM_MEMBERS: TeamMember[] = [
+    { name: 'FASYA', phone: '0143839582' },
+    { name: 'LIEN', phone: '0162659190' },
+    { name: 'LISA', phone: '01110516455' },
+    { name: 'ECA', phone: '01116179190' },
+    { name: 'FARAH', phone: '0146499190' },
+    { name: 'FIFI', phone: '0168019190' },
+    { name: 'AYU', phone: '0143839682' },
+    { name: 'IREEN', phone: '0173744553' },
+    { name: 'JIHA', phone: '0174044557' }
+];
+
+// --- COMPONENTS ---
+const Header: React.FC = () => {
+    return (
+        <header className="text-center mb-8">
+            <div className="w-full aspect-video bg-gray-100 rounded-xl mb-6 overflow-hidden shadow-lg">
+                <img 
+                    src="https://picsum.photos/seed/business/600/338" 
+                    alt="Channel Banner"
+                    className="w-full h-full object-cover"
+                />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">@kemchannelpg</h1>
+            <p className="text-gray-600">Connect with our specialists</p>
+        </header>
+    );
+};
+
+const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onSelect }) => (
+    <button
+        className="w-full bg-white/80 border border-gray-200 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400"
+        onClick={() => onSelect(member)}
+        aria-label={`Chat with ${member.name} on WhatsApp`}
+    >
+        <div className="p-3 flex items-center space-x-3">
+            <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+            </div>
+            <div className="flex-grow text-left">
+                <div className="flex items-center space-x-1.5 mb-0.5">
+                    <h2 className="text-sm font-semibold text-gray-900">{member.name}</h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm3.123 5.467a.75.75 0 00-1.06 1.06l1.25 1.25a.75.75 0 001.06 0l2.5-2.5a.75.75 0 00-1.06-1.06L9.39 9.22l-.722-.722z" clipRule="evenodd" />
+                    </svg>
+                </div>
+                <p className="text-xs text-gray-500">Sales Specialist</p>
+            </div>
+        </div>
+    </button>
+);
+
+const TeamList: React.FC<TeamListProps> = ({ members, onSelectMember }) => {
+    return (
+        <div className="grid grid-cols-2 gap-3">
+            {members.map((member) => (
+                <TeamMemberCard key={member.name} member={member} onSelect={onSelectMember} />
+            ))}
+        </div>
+    );
+};
+
+const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ member, onClose, onConfirm }) => {
+    return (
+        <div 
+            className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in"
+            onClick={onClose}
+            aria-modal="true"
+            role="dialog"
+        >
+            <div className="modal-backdrop bg-black/50 absolute inset-0"></div>
+            <div 
+                className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full m-4 p-6 animate-scale-in"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="text-center">
+                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.959 8.959 0 01-4.906-1.436L3 21l1.436-5.094A8.959 8.959 0 013 12c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
+                        </svg>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Start WhatsApp Chat</h3>
+                    <p className="text-gray-600 mb-6">
+                        Open WhatsApp to chat with <span className="font-semibold text-gray-900">{member.name}</span>?
+                    </p>
+                    <div className="flex space-x-3">
+                        <button 
+                            onClick={onClose}
+                            className="flex-1 px-4 py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            onClick={onConfirm}
+                            className="flex-1 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-green-400"
+                        >
+                            Open WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// --- MAIN APP COMPONENT ---
+const App: React.FC = () => {
+    const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+
+    const handleSelectMember = (member: TeamMember) => {
+        setSelectedMember(member);
+    };
+
+    const handleCloseModal = useCallback(() => {
+        setSelectedMember(null);
+    }, []);
+
+    const handleConfirmAction = () => {
+        if (selectedMember) {
+            const whatsappUrl = `https://wa.me/${selectedMember.phone.replace(/^0/, '60')}`;
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+            handleCloseModal();
+        }
+    };
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                handleCloseModal();
+            }
+        };
+
+        if (selectedMember) {
+            document.addEventListener('keydown', handleKeyDown);
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [selectedMember, handleCloseModal]);
+
+
+    return (
+        <React.Fragment>
+            <main className="container mx-auto px-4 py-8 max-w-md">
+                <Header />
+                <TeamList members={TEAM_MEMBERS} onSelectMember={handleSelectMember} />
+            </main>
+            {selectedMember && (
+                <ConfirmationModal 
+                    member={selectedMember} 
+                    onClose={handleCloseModal} 
+                    onConfirm={handleConfirmAction} 
+                />
+            )}
+        </React.Fragment>
+    );
+};
+
+export default App;
