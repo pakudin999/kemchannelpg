@@ -36,7 +36,41 @@ const TEAM_MEMBERS: TeamMember[] = [
     { name: 'JIHA', phone: '0174044557' }
 ];
 
+// --- HELPER CONSTANTS & FUNCTIONS ---
+const COLORS = [
+    'bg-red-200 text-red-700', 'bg-orange-200 text-orange-700',
+    'bg-amber-200 text-amber-700', 'bg-yellow-200 text-yellow-700',
+    'bg-lime-200 text-lime-700', 'bg-green-200 text-green-700',
+    'bg-emerald-200 text-emerald-700', 'bg-teal-200 text-teal-700',
+    'bg-cyan-200 text-cyan-700', 'bg-sky-200 text-sky-700',
+    'bg-blue-200 text-blue-700', 'bg-indigo-200 text-indigo-700',
+    'bg-violet-200 text-violet-700', 'bg-purple-200 text-purple-700',
+    'bg-fuchsia-200 text-fuchsia-700', 'bg-pink-200 text-pink-700',
+    'bg-rose-200 text-rose-700',
+];
+
+const getAvatarColor = (name: string) => {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash % COLORS.length);
+    return COLORS[index];
+};
+
+
 // --- COMPONENTS ---
+const Avatar: React.FC<{ name: string }> = ({ name }) => {
+    const initial = name.charAt(0).toUpperCase();
+    const colorClasses = getAvatarColor(name);
+
+    return (
+        <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${colorClasses}`}>
+            <span className="font-semibold text-lg">{initial}</span>
+        </div>
+    );
+};
+
 const Header: React.FC = () => {
     return (
         <header className="text-center mb-8">
@@ -53,10 +87,28 @@ const Header: React.FC = () => {
                     <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm3.123 5.467a.75.75 0 00-1.06 1.06l1.25 1.25a.75.75 0 001.06 0l2.5-2.5a.75.75 0 00-1.06-1.06L9.39 9.22l-.722-.722z" clipRule="evenodd" />
                 </svg>
             </h1>
-            <p className="text-gray-600">Connect with our specialists</p>
+            <p className="text-gray-600">Your direct line to our expert team.</p>
         </header>
     );
 };
+
+const SearchBar: React.FC<{ value: string; onChange: (value: string) => void }> = ({ value, onChange }) => (
+    <div className="relative mb-6">
+        <input
+            type="text"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="Find a specialist..."
+            className="w-full pl-10 pr-4 py-3 bg-white/80 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:outline-none transition-shadow shadow-sm"
+            aria-label="Search for a team member"
+        />
+        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+        </div>
+    </div>
+);
 
 const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onSelect }) => (
     <button
@@ -65,25 +117,30 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member, onSelect }) => 
         aria-label={`Chat with ${member.name} on WhatsApp`}
     >
         <div className="p-3 flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
-            </div>
-            <div className="flex-grow text-left">
-                <div className="flex items-center space-x-1.5 mb-0.5">
-                    <h2 className="text-sm font-semibold text-gray-900">{member.name}</h2>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+            <Avatar name={member.name} />
+            <div className="flex-grow text-left overflow-hidden">
+                <div className="flex items-center space-x-1.5">
+                    <h2 className="text-sm font-semibold text-gray-900 truncate">{member.name}</h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm3.123 5.467a.75.75 0 00-1.06 1.06l1.25 1.25a.75.75 0 001.06 0l2.5-2.5a.75.75 0 00-1.06-1.06L9.39 9.22l-.722-.722z" clipRule="evenodd" />
                     </svg>
                 </div>
-                <p className="text-xs text-gray-500">Sales Specialist</p>
+                <p className="text-xs text-gray-500 truncate">Sales Specialist</p>
             </div>
         </div>
     </button>
 );
 
 const TeamList: React.FC<TeamListProps> = ({ members, onSelectMember }) => {
+    if (members.length === 0) {
+        return (
+            <div className="text-center py-10">
+                <p className="text-gray-500 font-medium">No specialist found.</p>
+                <p className="text-sm text-gray-400 mt-1">Try a different name.</p>
+            </div>
+        );
+    }
+    
     return (
         <div className="grid grid-cols-2 gap-3">
             {members.map((member) => (
@@ -139,6 +196,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ member, onClose, 
 // --- MAIN APP COMPONENT ---
 const App: React.FC = () => {
     const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredMembers = TEAM_MEMBERS.filter(member =>
+        member.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     const handleSelectMember = (member: TeamMember) => {
         setSelectedMember(member);
@@ -175,10 +237,13 @@ const App: React.FC = () => {
 
     return (
         <React.Fragment>
-            <main className="container mx-auto px-4 py-8 max-w-md">
-                <Header />
-                <TeamList members={TEAM_MEMBERS} onSelectMember={handleSelectMember} />
-            </main>
+            <div className="p-4 sm:p-8">
+                <main className="w-full max-w-md mx-auto bg-white/60 backdrop-blur-xl rounded-2xl shadow-lg px-4 sm:px-6 py-8">
+                    <Header />
+                    <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                    <TeamList members={filteredMembers} onSelectMember={handleSelectMember} />
+                </main>
+            </div>
             {selectedMember && (
                 <ConfirmationModal 
                     member={selectedMember} 
