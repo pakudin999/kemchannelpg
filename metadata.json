@@ -1,0 +1,5 @@
+{
+  "name": "Team Contact Directory",
+  "description": "A simple and elegant web application to display a list of team members and provide quick access to contact them via WhatsApp.",
+  "requestFramePermissions": []
+}
